@@ -120,7 +120,7 @@ get_upper_tri = function(cormat){
 #' \code{\link{music_basis}}
 #' @export
 music_prop = function(bulk.mtx, sc.sce, markers = NULL, clusters, samples, select.ct = NULL, cell_size = NULL, ct.cov = FALSE, verbose = TRUE,
-                      iter.max = 1000, nu = 0.0001, eps = 0.01, centered = FALSE, normalize = FALSE, ... ){
+                      iter.max = 1000, nu = 0.0001, eps = 0.01, centered = FALSE, normalize = FALSE, sc.basis = NULL, ... ){
   bulk.gene = rownames(bulk.mtx)[rowMeans(bulk.mtx) != 0]
   bulk.mtx = bulk.mtx[bulk.gene, ]
   if(is.null(markers)){
@@ -128,7 +128,9 @@ music_prop = function(bulk.mtx, sc.sce, markers = NULL, clusters, samples, selec
   }else{
     sc.markers = intersect(bulk.gene, unlist(markers))
   }
-  sc.basis = music_basis(sc.sce, non.zero = TRUE, markers = sc.markers, clusters = clusters, samples = samples, select.ct = select.ct, cell_size = cell_size, ct.cov = ct.cov, verbose = verbose)
+  if (is.null(sc.basis)) {
+    sc.basis = music_basis(sc.sce, non.zero = TRUE, markers = sc.markers, clusters = clusters, samples = samples, select.ct = select.ct, cell_size = cell_size, ct.cov = ct.cov, verbose = verbose)
+  }
   cm.gene = intersect( rownames(sc.basis$Disgn.mtx), bulk.gene )
   if(is.null(markers)){
     if(length(cm.gene)< 0.2*min(length(bulk.gene), nrow(sc.sce)) )
