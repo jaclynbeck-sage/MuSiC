@@ -35,11 +35,8 @@ music.basic = function(Y, X, S, Sigma, iter.max, nu, eps){
   k = ncol(X)
   
   lm.D = nnls(X, Y)
-  r = resid(lm.D);
-  weight.gene = 1/(nu + r^2 + colSums( (lm.D$x*S)^2*t(Sigma)  ))
-  Y.weight = Y*sqrt(weight.gene)
-  D.weight = sweep(X, 1, sqrt(weight.gene), '*')
-  lm.D.weight = nnls(D.weight, Y.weight)
+
+  lm.D.weight = lm.D
   p.weight = lm.D.weight$x/sum(lm.D.weight$x)
   p.weight.iter = p.weight
   r = resid(lm.D.weight)
@@ -148,6 +145,10 @@ weight.cal.ct = function(Sp, Sigma.ct){
   weight = sapply(1:nGenes, function(g){
     sum(Sp%*%t(Sp)*matrix(Sigma.ct[,g], n.ct))
   })
+  if (any(weight < 0)) {
+    print("WARNING: Weight matrix has negative weights!")
+  }
+  weight[weight < 0] = 0
   return(weight)
 }
 
